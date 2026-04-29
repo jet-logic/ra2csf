@@ -37,9 +37,6 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/jet-logic/ra2csf"
 
-[project.scripts]
-ghrapt = "ra2csf.__main__:main"
-
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["ra2csf*"]

@@ -27,6 +27,8 @@ def read_entry(fh: IO[bytes], sig=b""):
     value = read_wstr(fh)
     if kind == b"WRTS":
         extra = read_str(fh)
+        assert extra
+        # print("Extra", (key, value, extra))
     else:
         assert kind == b" RTS"
         extra = None
@@ -38,7 +40,7 @@ def read_entries(fh: IO[bytes]):
     b = fh.read(4)
     while b == b" LBL":
         key, value, flag, extra = read_entry(fh, b)
-        yield key, value, flag, extra
+        yield key, value, extra, flag
         b = fh.read(4)
 
 
