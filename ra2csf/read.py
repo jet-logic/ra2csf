@@ -34,20 +34,6 @@ def read_entry(fh: IO[bytes], sig=b""):
     return key, value, flag, extra
 
 
-def read_head(fh: IO[bytes]) -> bytes:
-    def fx(
-        identifier: int,
-        version: int,
-        labels: int,
-        extra_values: int,
-        flags: int,
-        language: int,
-    ):
-        return dict(locals())
-
-    return fx(*unpack("<IIIIII", fh.read(6 * 4)))
-
-
 def read_entries(fh: IO[bytes]):
     b = fh.read(4)
     while b == b" LBL":
@@ -57,6 +43,7 @@ def read_entries(fh: IO[bytes]):
 
 
 def parse(fh: IO[bytes]):
+    # identifier, version, labels, extra_value, flag, language
     head: tuple[int] = unpack("<IIIIII", fh.read(6 * 4))
     strings = tuple(read_entries(fh))
     return head, strings

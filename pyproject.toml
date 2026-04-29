@@ -8,7 +8,7 @@ version = {attr = "ra2csf.__init__.__version__"}
 [project]
 name = "ra2csf"
 dynamic = ["version"]
-description = "Read, write, update Command & Conquer: Red Alert 2 .csf files"
+description = "Read, write, update .csf files of Command & Conquer: Red Alert 2 / Command & Conquer: Yuri's Revenge"
 readme = "README.md"
 authors = [
     {name = "jet-logic"}

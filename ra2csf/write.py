@@ -24,8 +24,28 @@ def write_entry(fh: IO[bytes], key, value="", flag=1, extra=None):
 
 
 def write(
-    fh: IO[bytes], head=list[int], strings=list[tuple[str, str, int, str | None]]
+    fh: IO[bytes],
+    strings=list[tuple[str, str, int, str | None]],
+    head: list[int] = [],
+    version=3,
+    flags=0,
+    language=0,
+    identifier=0x43534620,
 ):
-    fh.write(pack("<IIIIII", *head))
-    for v in strings:
-        write_entry(fh, *v)
+    if head:
+        fh.write(pack("<IIIIII", *head))
+    else:
+        n = len(strings)
+        fh.write(pack("<IIIIII", identifier, version, n, n, flags, language))
+
+    if isinstance(strings, dict):
+        for key, v in strings.items():
+            assert isinstance(key, str)
+            if isinstance(v, (tuple, list)):
+                write_entry(fh, key, *v)
+            else:
+                assert isinstance(v, str)
+                write_entry(fh, v)
+    else:
+        for v in strings:
+            write_entry(fh, *v)

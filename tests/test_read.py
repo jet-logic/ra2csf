@@ -12,6 +12,7 @@ class Test(TestCase):
         file = "tests/ra2.csf"
         head, strings = parse_file(file)
         (id,) = unpack("<I", b" FSC")
+        print(" FSC", hex(id))
         self.assertEqual(id, head[0])
         self.assertEqual(3, head[1])
         self.assertGreater(head[2], 4000)
@@ -20,7 +21,7 @@ class Test(TestCase):
         self.assertEqual(0, head[5])
         # write
         with TemporaryFile() as wh:
-            write(wh, head, strings)
+            write(wh, strings)
             # print(wh.tell())
             self.assertEqual(wh.tell(), stat(file).st_size)
             wh.seek(0)
