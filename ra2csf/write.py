@@ -48,6 +48,8 @@ def write(
                 assert v[0]
                 # print(v)
                 write_entry(fh, key, *v)
+            elif v is False:
+                pass
             else:
                 assert isinstance(v, str)
                 # assert v

@@ -1,12 +1,22 @@
 # ra2csf
 
-A Python library for reading, writing, and updating `.csf` files from Command & Conquer: Red Alert 2 and Command & Conquer: Yuri's Revenge.
+A Python library for reading, writing, and updating [`.csf`](https://modenc.renegadeprojects.com/CSF) files from [Command & Conquer: Red Alert 2](https://en.wikipedia.org/wiki/Command_%26_Conquer:_Red_Alert_2) and [Command & Conquer: Yuri's Revenge](https://en.wikipedia.org/wiki/Command_%26_Conquer:_Yuri%27s_Revenge).
+
+![banner](banner.png)
+
+[![GitHub stars](https://img.shields.io/github/stars/jet-logic/ra2csf.svg?style=social)](https://github.com/jet-logic/ra2csf/stargazers) [![PyPI version](https://img.shields.io/pypi/v/ra2csf.svg)](https://pypi.org/project/ra2csf/) [![Test](https://github.com/jet-logic/ra2csf/actions/workflows/tests.yml/badge.svg)](https://github.com/jet-logic/ra2csf/actions/workflows/tests.yml) [![Publish](https://github.com/jet-logic/ra2csf/actions/workflows/publish.yml/badge.svg)](https://github.com/jet-logic/ra2csf/actions/workflows/publish.yml)
 
 ## Installation
 
 ```bash
 pip install ra2csf
 ```
+
+## ☕ Support
+
+If you find this project helpful, consider supporting me:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B01E8SY7)
 
 ## Overview
 
@@ -124,6 +134,170 @@ buffer.seek(0)
 loaded = ra2csf.load(buffer)
 ```
 
+## Command-Line Interface
+
+The `ra2csf` CLI provides three main commands for working with CSF files.
+
+### Overview
+
+```bash
+ra2csf {dump,merge,update} [arguments]
+```
+
+---
+
+## Commands
+
+### `dump` - Export CSF to JSON/YAML
+
+Convert a CSF file to human-readable JSON or YAML format.
+
+```bash
+ra2csf dump [--format json|yaml] <csf_file> <output_file>
+```
+
+**Aliases:** `d`
+
+**Options:**
+
+- `-f, --format` - Output format (`json` or `yaml`, default: `json`)
+
+**Examples:**
+
+```bash
+# Export to JSON
+ra2csf dump ra2.csf strings.json
+
+# Export to YAML
+ra2csf dump --format yaml ra2.csf strings.yaml
+
+# Short form
+ra2csf d -f yaml ra2.csf strings.yaml
+```
+
+---
+
+### `merge` - Merge files into CSF
+
+Merge JSON or YAML files into a new CSF file.
+
+```bash
+ra2csf merge <csf_file> <sources...>
+```
+
+**Aliases:** `m`
+
+**Behavior:** Creates a new CSF file (overwrites if exists).
+
+**Examples:**
+
+```bash
+# Merge multiple JSON files into a CSF
+ra2csf merge output.csf strings.json more_strings.json
+
+# Merge YAML files
+ra2csf merge output.csf translations.yaml
+
+# Short form
+ra2csf m output.csf data.json
+```
+
+---
+
+### `update` - Update existing CSF file
+
+Add or modify entries in an existing CSF file.
+
+```bash
+ra2csf update <csf_file> <sources...>
+```
+
+**Aliases:** `u`
+
+**Behavior:** Reads the existing CSF file, applies updates from source files, and saves back to the same file.
+
+**Examples:**
+
+```bash
+# Update a CSF with new strings
+ra2csf update ra2.csf new_strings.json
+
+# Apply multiple update files
+ra2csf update ra2.csf patch1.json patch2.yaml
+
+# Short form
+ra2csf u ra2.csf hotfix.json
+```
+
+---
+
+## Source File Formats
+
+The `merge` and `update` commands accept both JSON and YAML files. The format is auto-detected.
+
+### JSON Format
+
+```json
+{
+  "NAME: Soviet War Factory": "Soviet War Factory",
+  "DESC: Soviet War Factory": "Produces heavy vehicles",
+  "NAME: Tesla Reactor": "Tesla Reactor"
+}
+```
+
+### YAML Format
+
+```yaml
+NAME: Soviet War Factory: Soviet War Factory
+DESC: Soviet War Factory: Produces heavy vehicles
+NAME: Tesla Reactor: Tesla Reactor
+```
+
+## Practical Examples
+
+### Extract all strings for translation
+
+```bash
+# Dump to JSON for editing
+ra2csf dump ra2.csf en_strings.json
+
+# Or YAML for better readability
+ra2csf dump -f yaml ra2.csf en_strings.yaml
+```
+
+### Create a translation patch
+
+```bash
+# 1. Edit the JSON file with translations
+# 2. Apply updates to the original CSF
+ra2csf update ra2.csf chinese_translations.json
+```
+
+### Combine multiple string sources
+
+```bash
+# Merge several JSON files into one CSF
+ra2csf merge ra2.csf ra3_orig.csf units.json buildings.json
+```
+
+### Incremental updates
+
+```bash
+# Apply multiple update patches in sequence
+ra2csf update game.csf v1.1_strings.json
+ra2csf update game.csf v1.2_strings.json
+ra2csf update game.csf hotfix_strings.json
+```
+
+### Pipe with stdin/stdout
+
+The CLI supports `-` as a placeholder for stdin/stdout:
+
+```bash
+# Dump to stdout (for piping)
+ra2csf dump ra2.csf - | jq '.'
+```
+
 ## Development
 
 ```bash
@@ -132,4 +306,7 @@ pip install ra2csf[dev]
 
 # Run tests
 pytest
+
+# Format code
+black ra2csf/
 ```

@@ -1,15 +1,19 @@
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 from .read import parse_file, parse
 from .write import write
 
 
-def load(file=""):
+def load(file="", head=None):
     if isinstance(file, str):
-        head, strings = parse_file(file)
+        _head, strings = parse_file(file)
     else:
-        head, strings = parse(file)
-    return dict((v[0], (v[1], v[2]) if v[2] else v[1]) for v in strings)
+        _head, strings = parse(file)
+    if head is not None:
+        assert isinstance(head, list)
+        head.clear()
+        head.extend(_head)
+    return dict((v[0], [v[1], v[2]] if v[2] else v[1]) for v in strings)
 
 
 def dump(strmap: dict[str, str] = {}, file="", **kwargs):
@@ -21,11 +25,8 @@ def dump(strmap: dict[str, str] = {}, file="", **kwargs):
 
 
 def update(file="", strmap: dict[str, str] = {}, **kwargs):
-    if isinstance(file, str):
-        head, strings = parse_file(file)
-    else:
-        head, strings = parse(file)
-    smap = dict((v[0], (v[1], v[2]) if v[2] else v[1]) for v in strings)
+    head = []
+    smap = load(file, head)
     for k, v in strmap.items():
         smap[k] = v
     with open(file, "wb") as wh:

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import json
 from pathlib import Path
 from struct import unpack
 from tempfile import NamedTemporaryFile, TemporaryFile, gettempdir
@@ -69,16 +70,23 @@ class Test(TestCase):
     def test_debug_csf(self):
         tmp = Path(gettempdir())
         csf_file = Path(file)
-        csf_debug_file = tmp / f"{csf_file.stem}-debug{csf_file.suffix}"
-        with csf_file.open("rb") as r1:
-            smap = ra2csf.load(r1)
-        for k, v in tuple(smap.items()):
-            if isinstance(v, str):
-                smap[k] = k
-            else:
-                smap[k] = (k, v[1])
-        with csf_debug_file.open("bw") as w1:
-            ra2csf.dump(smap, w1)
+        if 1:
+            csf_debug_file = tmp / f"{csf_file.stem}-debug{csf_file.suffix}"
+            with csf_file.open("rb") as r1:
+                smap = ra2csf.load(r1)
+            for k, v in tuple(smap.items()):
+                if isinstance(v, str):
+                    smap[k] = k
+                else:
+                    smap[k] = (k, v[1])
+            with csf_debug_file.open("bw") as w1:
+                ra2csf.dump(smap, w1)
+        if 1:
+            csf_json_file = tmp / f"{csf_file.stem}.json"
+            with csf_file.open("rb") as r1:
+                smap = ra2csf.load(r1)
+            with csf_json_file.open("w") as w1:
+                json.dump(smap, w1, indent=True)
 
 
 if __name__ == "__main__":
